@@ -1,0 +1,114 @@
+// Proto definition of GoodData Service and the request protos.
+syntax = "proto3";
+package proto;
+
+import "gooddata_data.proto";
+
+option go_package = "gen/go/proto";
+
+// Messages to register query customer info.
+message RegisterQCRequest { QueryCustomerInfo qc_info = 1; }
+
+message RegisterQCResponse { string uuid = 1; }
+
+message LoginQCRequest { QueryCustomerInfo qc_info = 1; }
+
+message LoginQCResponse {
+  enum ErrorCode {
+    Success = 0;
+    UserNameOrPwdError = 1;
+  }
+  ErrorCode code = 1;
+  string qc_uuid = 2;
+}
+
+// Messages to register data domain info.
+message RegisterDORequest { DOInfo do_info = 1; }
+
+message RegisterDOResponse { string uuid = 1; }
+
+// Messages to register MPC info.
+message RegisterMPCRequest { MPCInfo mpc_info = 1; }
+
+message RegisterMPCResponse { string uuid = 1; }
+
+// Messages to submit QueryInfo. Used when query customer submit the query.
+message SubmitQueryRequest {
+  QueryInfo query_info = 1;
+}
+
+message SubmitQueryResponse { string uuid = 1; }
+
+// Messages to get query info. Used when DOs need query content for training.
+message GetQueryInfoRequest { string query_uuid = 1; }
+
+message GetQueryInfoResponse {
+  QueryInfo query_info = 1;
+  QueryCluster query_cluster = 2;
+}
+
+// Messages to get query execution info. Used when DOs finished training.
+message QueryCompletedRequest {
+  QueryExecutionInfo query_execution_info = 1;
+  string do_uuid = 2;
+}
+
+message QueryCompletedResponse {}
+
+// Messages to get query result. Used to return query result to query customer.
+message GetQueryExecutionInfoRequest { string query_uuid = 1; }
+
+message GetQueryExecutionInfoResponse {
+  QueryExecutionInfo query_execution_info = 1;
+  bool result_ready = 2;
+}
+
+// TestModel will submit prediction for testnet.
+message TestModelRequest { string query_uuid = 1; }
+
+message TestModelResponse { string uuid = 1;}
+
+message TestModelCompletedRequest { string test_uuid = 1; }
+
+message TestModelCompletedResponse {}
+
+service GoodDataService {
+  // RegisterQC Register query customer, generate UUID, notify chain and return UUID.
+  rpc RegisterQC(RegisterQCRequest) returns (RegisterQCResponse);
+
+  // LoginQC login query customer
+  rpc LoginQC(LoginQCRequest) returns (LoginQCResponse);
+  
+  // RegisterDO Register data owner, generate UUID, notify chain and return UUID.
+  rpc RegisterDO(RegisterDORequest) returns (RegisterDOResponse);
+
+  // RegisterMPC Register MPC node, generate UUID, notify chain and return UUID.
+  rpc RegisterMPC(RegisterMPCRequest) returns (RegisterMPCResponse);
+
+  // SubmitQuery Query customer submits the query. GDS sevice will save query info,
+  // chose DO and MPC nodes and notify the chain.
+  rpc SubmitQuery(stream SubmitQueryRequest) returns (SubmitQueryResponse);
+
+  // GetQueryInfo DO gets query information after it is chosen for query training. 
+  // Returns QueryInfo as well as chosen nodes info for P2P connection.
+  // Returns NOT_FOUND error in cases query is not found.
+  rpc GetQueryInfo(GetQueryInfoRequest) returns (stream GetQueryInfoResponse);
+
+  // QueryCompleted DO sends query result after it completes the query training. 
+  // GDS service will check query results and save query info in case all of DO
+  // results are received and consistent.
+  // Returns UNKNOWN error in case query results are not consistent.
+  // Returns NOT_FOUND error in case query is not found.   
+  rpc QueryCompleted(stream QueryCompletedRequest) returns (QueryCompletedResponse);
+
+  // GetQueryExecutionInfo Query customer asks for query result.
+  // Returns NOT_FOUND error in case query is not found.  
+  rpc GetQueryExecutionInfo(GetQueryExecutionInfoRequest)
+      returns (stream GetQueryExecutionInfoResponse);
+
+  // TestModel initiate a test.
+  rpc TestModel(TestModelRequest) returns (TestModelResponse);
+
+  // TestModelCompleted completed a test.
+  rpc TestModelCompleted(TestModelCompletedRequest) returns (TestModelCompletedResponse);
+}

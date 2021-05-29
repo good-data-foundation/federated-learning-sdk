@@ -1,0 +1,41 @@
+{
+    "chain_address": "http://192.168.1.5:8545",
+
+    "private_key": "ed587757a0ce2b5a6b21b8b5e72be2646ad80122a638539c9420b6b9cb9e0638",
+
+    "good_data_service_address": "192.168.1.25:9000",
+
+    "dos": ["do1", "do2"],
+
+    "mpcs": ["mpc1", "mpc2", "mpc3"],
+
+    "do1": {
+        "ip_address": "localhost",
+        "port": "10080",
+        "public_key": "do1_public_key"
+    },
+
+    "do2": {
+        "ip_address": "localhost",
+        "port": "10081",
+        "public_key": "do2_public_key"
+    },
+
+    "mpc1": {
+        "ip_address": "localhost",
+        "port": "10082",
+        "public_key": "mpc1_public_key"
+    },
+
+    "mpc2": {
+        "ip_address": "localhost",
+        "port": "10083",
+        "public_key": "mpc2_public_key"
+    },
+
+    "mpc3": {
+        "ip_address": "localhost",
+        "port": "10084",
+        "public_key": "mpc3_public_key"
+    }
+}
