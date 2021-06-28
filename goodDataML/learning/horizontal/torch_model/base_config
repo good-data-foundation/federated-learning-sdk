@@ -1,0 +1,24 @@
+data_config:
+  batch_size: 64
+  feature_process:
+    categorical_features: one-hot
+    numeric_features: standardize
+  feature_type:
+    categorical_features:
+    - Sex
+    label: Survived
+    numeric_features:
+    - Age
+    - Fare
+    - Pclass
+    - Parch
+    - SibSp
+model_config:
+  model_train_config:
+    epoch: 100
+    learning_rate: 0.01
+    loss_fn: BCELoss
+    optimizer: Adam
+  train_validate_split:
+  - 0.8
+  - 0.2

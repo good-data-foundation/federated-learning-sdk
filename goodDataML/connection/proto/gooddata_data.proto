@@ -1,0 +1,75 @@
+// Proto definition of basic data used in gooddata service.
+syntax = "proto3";
+package proto;
+
+option go_package = "gen/go/proto";
+
+// Node information for each entity.
+message NodeInfo {
+  string uuid = 2;
+  string address = 3;
+  string port = 4;
+}
+
+// Resource information for each node. Such as CPU and RAM limits.
+message ResourceInfo {}
+
+// Query customer information.
+message QueryCustomerInfo {
+  string username = 1;
+  string password = 2;
+  string uuid = 3;
+  string public_key = 4;
+  string email = 5;
+  NodeInfo node_info = 6;
+}
+
+// Data owner information.
+message DOInfo {
+  string uuid = 1;
+  string public_key = 2;
+  NodeInfo node_info = 3;
+}
+
+// MPC information.
+message MPCInfo {
+  string uuid = 1;
+  string public_key = 2;
+  NodeInfo node_info = 3;
+  ResourceInfo resource_info = 4;
+}
+
+// Query information.
+message QueryInfo {
+  string uuid = 1;
+  string qc_uuid = 2;
+  bytes content = 3;
+  int64 data_set = 4;
+}
+
+// Query running Cluster.
+message QueryCluster {
+  string query_uuid = 1;
+  repeated NodeInfo mpc_nodes = 2;
+  repeated NodeInfo do_nodes = 3;
+}
+
+// Status indicates whether the query is completed. 
+enum QueryStatus {
+  // 0: Not completed.
+  NotCompleted = 0;
+  // 1: Succeeded.
+  Succeeded = 1;
+  // 2: Failed.
+  Failed =2;
+}
+
+// Query execution information, result and finished_time will not be set until
+// query finished.
+message QueryExecutionInfo {
+  string uuid = 1;
+  bytes result = 2;
+  int64 start_time_ns = 3;
+  int64 finished_time_ns = 4;
+  QueryStatus status = 5;
+}
